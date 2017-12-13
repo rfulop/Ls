@@ -6,7 +6,7 @@
 #    By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/04/29 03:17:34 by rfulop            #+#    #+#              #
-#    Updated: 2017/12/07 16:16:54 by rfulop           ###   ########.fr        #
+#    Updated: 2017/12/13 14:25:30 by rfulop           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -117,7 +117,8 @@ SRC_NAME = ft_memset.c \
 			ft_intfill.c \
 			ft_strnewchr.c \
 			ft_str_isdigit.c \
-            ft_strrev.c
+            ft_strrev.c \
+			ft_itoa_base_int.c
 
 SRC = $(addprefix $(SRC_PATH), $(SRC_NAME))
 
