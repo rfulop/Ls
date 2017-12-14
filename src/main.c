@@ -12,7 +12,9 @@
 
 #include "ft_ls.h"
 
-char *get_perm(int oct)
+void open_dir(t_env *env, char *dir);
+
+char *get_perm(int oct, int type)
 {
 	int i;
 	int j;
@@ -20,7 +22,8 @@ char *get_perm(int oct)
 	static char perm[13] = {0};
 
 	i = 2;
-	j = 0;
+	j = 1;
+	perm[0] = type == 4 ? 'd' : '-';
 	bit = ((oct / ft_power(10, 4)) % 10);
 	while (i >= 0)
 	{
@@ -31,11 +34,10 @@ char *get_perm(int oct)
 		perm[j + 2] = bit & 1 ? 'x' : '-';
 		j += 3;
 	}
-	// ft_printf("oct = %d perm = %s\n", oct, perm);
 	return (perm);
 }
 
-void display(struct stat *sb, char *perm, char *file)
+void display(t_env *env, struct stat *sb, char *perm, char *file)
 {
 	struct passwd *pwd;
 	struct group *gr;
@@ -45,9 +47,11 @@ void display(struct stat *sb, char *perm, char *file)
 	// ft_printf("\t%-8.8s\n", pwd->pw_name);
 	gr = getgrgid(sb->st_gid);
 	// ft_printf("\t%-8.15s\n", gr->gr_name);
-	ft_strncpy(date, ctime(&sb->st_atime) + 4, 12);
+	ft_strncpy(date, ctime(&sb->st_mtime) + 4, 12);
 	// ft_printf("date = %s\n", date);
-	ft_printf("%s%5d %-8.8s%8.15s%7d %s %s\n",
+	// ft_printf("%s%5d %-8.8s%-12.16s%5d\n",
+	// perm, sb->st_nlink, pwd->pw_name, gr->gr_name, sb->st_size);
+	ft_printf("%s%5d %-8.8s%-12.16s%5d %s %s\n",
 	perm, sb->st_nlink, pwd->pw_name, gr->gr_name, sb->st_size, date, file);
 	// ft_printf("\tsize = %d\n", ((long long)sb->st_size * 1000) / 100000);
 	// sb->st_atime[ft_strlen((char*)sb->st_atime) - 4] = '\0';
@@ -72,7 +76,9 @@ void 	init_env(t_env *env)
 	env->hiden_files = 0;
 	env->reverse_short = 0;
 	env->time_short = 0;
+	env->total = 0;
 	env->path = NULL;
+	env->curr_path = NULL;
 }
 
 void	check_args_letter(t_env *env, char let)
@@ -121,10 +127,23 @@ void parse_args(t_env *env, char **argv, int argc)
 	}
 }
 
-void display_stat(struct dirent *file, struct stat *sb)
+void display_open(struct dirent *file)
 {
-	// ft_printf("%d\n", file->d_type);
-	ft_printf("\nFile name is %s\n", file->d_name);
+	ft_printf("Inode number = %d\n", file->d_ino);
+	// ft_printf("Offset = %d\n", file->d_off);
+	ft_printf("Length of this record = %d\n", file->d_reclen);
+	ft_printf("Type of file = %d\n", file->d_type);
+}
+
+void display_stat(t_env *env, struct dirent *file, struct stat *sb)
+{
+	ft_printf("\n");
+	// ft_printf("\nFile type = %d\n", file->d_type);
+	if (file->d_type == 8)
+		ft_printf("\tFile is regular\n");
+	else
+		ft_printf("\tFile is a directory\n");
+	ft_printf("\tFile name is %s\n", file->d_name);
 	ft_printf("\t-node number: %ld\n", (long)sb->st_ino);
 	ft_printf("\tMode: %lo (octal)\n", (unsigned long)sb->st_mode);
 	ft_printf("\tLink count: %ld\n", (long)sb->st_nlink);
@@ -138,19 +157,41 @@ void display_stat(struct dirent *file, struct stat *sb)
 	ft_printf("\tLast file modification: %s", ctime(&sb->st_mtime));
 }
 
-void put_data(struct dirent *file, t_file *data, int type)
+int 	do_stat(t_env *env, struct dirent *file, struct stat *sb)
+{
+	int statret;
+	char *path;
+	char *tmp;
+
+	tmp = env->curr_path;
+	if (0[tmp] == '.')
+		path = file->d_name;
+	else
+	{
+		path = ft_strjoin(tmp, "/");
+		path = ft_strjoin(path, file->d_name);
+	}
+	statret = stat(path, sb);
+	return (statret);
+}
+
+void put_data(t_env *env, struct dirent *file, t_file *data)
 {
 	struct stat sb;
 
-	// ft_printf("%d\n", file->d_type);
-	stat(file->d_name, &sb);
-	// display_stat(file, &sb);
-	data->perm = get_perm(ft_itoa_base_int((int)sb.st_mode, 8));
-	data->type = type;
-	display(&sb, data->perm, file->d_name);
+	do_stat(env, file, &sb);
+	// display_stat(env, file, &sb);
+	data->perm = get_perm(ft_itoa_base_int((int)sb.st_mode, 8), file->d_type);
+	if (file->d_type == F_DIR && ft_strcmp(ACT, file->d_name) && ft_strcmp(BEF, file->d_name))
+	{
+		open_dir(env, file->d_name);
+		// ft_printf("%s is a dir\n", file->d_name);
+	}
+	display(env, &sb, data->perm, file->d_name);
+	env->total += sb.st_blocks;
 }
 
-void push_lst(struct dirent *file, t_lst *lst, int type)
+void push_lst(t_env *env, struct dirent *file, t_lst *lst)
 {
 	t_lst	*previous;
 	t_lst	*tmp;
@@ -169,45 +210,74 @@ void push_lst(struct dirent *file, t_lst *lst, int type)
 	tmp->prev = previous;
 	if (!(tmp->data = (t_file*)malloc(sizeof(t_file))))
 		exit (-1);
-	put_data(file, tmp->data, type);
+	put_data(env, file, tmp->data);
+}
+
+
+void open_dir(t_env *env, char *dir)
+{
+	ft_printf("1 dir = %s\n", dir);
+	t_lst *lst;
+	DIR *rep = NULL;
+	struct dirent* file = NULL;
+
+	rep = opendir(dir);
+	while ((file = readdir(rep)))
+		push_lst(env, file, lst);
+
+	if (closedir(rep) == -1)
+		exit(-1);
+	ft_printf("1\n");
+}
+
+void display_lst(t_lst *lst)
+{
+	t_lst *tmp;
+
+	tmp = lst;
+	while (tmp)
+	{
+		ft_printf("tmp->name = %s\n", tmp->data->name);
+		tmp = tmp->next;
+	}
+}
+
+int count_total(t_env *env)
+{
+	int total;
+	struct stat sb;
+	struct dirent *file;
+	DIR *rep;
+
+	total = 0;
+	rep = opendir(env->path);
+	while ((file = readdir(rep)))
+	{
+		// display_open(file);
+		do_stat(env, file, &sb);
+		total += sb.st_blocks;
+	}
+	closedir(rep);
+	ft_printf("Total %d\n", total);
+	return (total);
 }
 
 int main(int argc, char **argv)
 {
 	t_env env;
 	DIR* rep = NULL;
-	struct dirent* file = NULL;
 	// struct stat sb;
-	t_lst *lst;
 
-	if (argc < 2)
-		exit(-1);
 	init_env(&env);
-	lst = NULL;
-	env.path = ft_strdup(argv[1]);
-	rep = opendir(env.path);
+	if (argc < 2)
+		env.path = ".";
+	else
+		env.path = ft_strdup(argv[1]);
+	env.curr_path = ft_strdup(env.path);
 	parse_args(&env, argv, argc);
 	// print_env(&env);
-	if (!rep)
-	{
-		perror("Error : ");
-		exit(1);
-	}
-	while ((file = readdir(rep)))
-	{
-		push_lst(file, lst, 1);
-		// ft_printf("%d\n", file->d_type);
-		// ft_printf("File name is %s\n", file->d_name);
-		// stat(file->d_name, &sb);
-		// oct = ft_itoa_base_int((int)sb.st_mode, 8);
-		// char *perm = get_perm(oct);
-		// ft_printf("\tperm = %d -> %s\n", oct, perm);
-		// display_stat(file, &sb);
-		// display(&sb, perm, file->d_name);
-		// file = NULL;
-	}
-	if (closedir(rep) == -1)
-		exit(-1);
-	// ft_printf("Le dossier a ete ferme avec succes");
+	count_total(&env);
+	open_dir(&env, env.path);
+	// display_lst(lst);
 	return 0;
 }

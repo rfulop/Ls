@@ -54,7 +54,7 @@ readdir(DIR *dirp);
 closedir(DIR *dirp)
 
 stat / lstat
-	int stat(const char *path, struct stat *buf); 
+	int stat(const char *path, struct stat *buf);
 	int lstat(const char *path, struct stat *buf)
 
 
@@ -67,3 +67,25 @@ time / ctime
 readlink
 	◦
 perrror / strerror
+
+
+
+
+  write
+◦ opendir
+◦ readdir
+◦ closedir
+◦ stat
+◦ lstat
+◦ getpwuid
+◦ getgrgid
+◦ listxattr
+◦ getxattr
+◦ time
+◦ ctime
+◦ readlink
+◦ malloc
+◦ free
+◦ perror
+◦ strerror
+◦ exit
