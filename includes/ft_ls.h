@@ -77,4 +77,13 @@ typedef struct s_file
   char       *name;
 }              t_file;
 
+/*
+** Debug
+*/
+void debug_lst(t_lst *lst);
+void debug_stat(t_env *env, struct dirent *file, struct stat *sb);
+void debug_open(struct dirent *file);
+void 	debug_env(t_env *env);
+
+
 #endif

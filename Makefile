@@ -6,13 +6,13 @@
 #    By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/09/26 22:48:41 by rfulop            #+#    #+#              #
-#    Updated: 2017/12/11 18:48:11 by rfulop           ###   ########.fr        #
+#    Updated: 2017/12/15 23:47:34 by rfulop           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 .PHONY: all, clean, fclean, re
 
 CC = clang
-CFLAGS = -g -Wall -Werror -Wextra -Wunused
+CFLAGS = #-g -Wall -Werror -Wextra -Wunused
 NAME = ft_ls
 
 SRC_PATH = ./src/
@@ -22,6 +22,7 @@ INC_PATH = ./includes/
 LIB_PATH = ./libft/
 
 SRC_FILES = main.c \
+			debug.c
 
 INC_FILES = ft_ls.h
 LIB_FILES = libft.a
