@@ -3,16 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rfulop <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/10 18:35:37 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/10 22:39:20 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/15 17:13:59 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
 void open_dir(t_env *env, char *dir);
+void display_lst(t_lst *lst);
+
+t_lst *sort_list(t_lst *lst, int (*cmp)(const char *, const char *))
+{
+	t_lst *begin;
+	struct s_file *tmp;
+
+	begin = lst;
+	while (lst && lst->next)
+	{
+		if ((cmp(lst->data->name, lst->next->data->name)) > 0)
+		{
+			tmp = lst->data;
+			lst->data = lst->next->data;
+			lst->next->data = tmp;
+			lst = begin;
+		}
+		else
+			lst = lst->next;
+	}
+	lst = begin;
+	// display_lst(lst);
+	return (lst);
+}
 
 char *get_perm(int oct, int type)
 {
@@ -37,22 +61,22 @@ char *get_perm(int oct, int type)
 	return (perm);
 }
 
-void display(t_env *env, struct stat *sb, char *perm, char *file)
+void display(t_file *file)
 {
 	struct passwd *pwd;
 	struct group *gr;
 	char date[13] = {0};
 
-	pwd = getpwuid(sb->st_uid);
+	pwd = getpwuid(file->st_uid);
 	// ft_printf("\t%-8.8s\n", pwd->pw_name);
-	gr = getgrgid(sb->st_gid);
+	gr = getgrgid(file->st_gid);
 	// ft_printf("\t%-8.15s\n", gr->gr_name);
-	ft_strncpy(date, ctime(&sb->st_mtime) + 4, 12);
+	ft_strncpy(date, ctime(&file->mtime) + 4, 12);
 	// ft_printf("date = %s\n", date);
 	// ft_printf("%s%5d %-8.8s%-12.16s%5d\n",
 	// perm, sb->st_nlink, pwd->pw_name, gr->gr_name, sb->st_size);
 	ft_printf("%s%5d %-8.8s%-12.16s%5d %s %s\n",
-	perm, sb->st_nlink, pwd->pw_name, gr->gr_name, sb->st_size, date, file);
+	file->perm, file->st_nlink, pwd->pw_name, gr->gr_name, file->st_size, date, file->name);
 	// ft_printf("\tsize = %d\n", ((long long)sb->st_size * 1000) / 100000);
 	// sb->st_atime[ft_strlen((char*)sb->st_atime) - 4] = '\0';
 	// ft_printf("%.40s\n", ctime(&sb->st_atime));
@@ -76,7 +100,7 @@ void 	init_env(t_env *env)
 	env->hiden_files = 0;
 	env->reverse_short = 0;
 	env->time_short = 0;
-	env->total = 0;
+	// env->total = 0;
 	env->path = NULL;
 	env->curr_path = NULL;
 }
@@ -127,7 +151,7 @@ void parse_args(t_env *env, char **argv, int argc)
 	}
 }
 
-void display_open(struct dirent *file)
+void debug_open(struct dirent *file)
 {
 	ft_printf("Inode number = %d\n", file->d_ino);
 	// ft_printf("Offset = %d\n", file->d_off);
@@ -135,7 +159,7 @@ void display_open(struct dirent *file)
 	ft_printf("Type of file = %d\n", file->d_type);
 }
 
-void display_stat(t_env *env, struct dirent *file, struct stat *sb)
+void debug_stat(t_env *env, struct dirent *file, struct stat *sb)
 {
 	ft_printf("\n");
 	// ft_printf("\nFile type = %d\n", file->d_type);
@@ -157,89 +181,82 @@ void display_stat(t_env *env, struct dirent *file, struct stat *sb)
 	ft_printf("\tLast file modification: %s", ctime(&sb->st_mtime));
 }
 
+char *get_path(t_env *env, char* file)
+{
+	char *path;
+	char *tmp;
+
+	tmp = env->path;
+	if (0[tmp] == '.')
+		path = ft_strdup(file);
+	else
+	{
+		path = ft_strjoin(tmp, "/");
+		path = ft_strjoin(path, file);
+	}
+	return (path);
+}
+
 int 	do_stat(t_env *env, struct dirent *file, struct stat *sb)
 {
 	int statret;
 	char *path;
-	char *tmp;
 
-	tmp = env->curr_path;
-	if (0[tmp] == '.')
-		path = file->d_name;
-	else
-	{
-		path = ft_strjoin(tmp, "/");
-		path = ft_strjoin(path, file->d_name);
-	}
+	path = get_path(env, file->d_name);
 	statret = stat(path, sb);
 	return (statret);
 }
 
 void put_data(t_env *env, struct dirent *file, t_file *data)
 {
+	char *tmp;
 	struct stat sb;
 
 	do_stat(env, file, &sb);
-	// display_stat(env, file, &sb);
+	data->type = file->d_type;
+	data->st_nlink = sb.st_nlink;
+	data->st_uid = sb.st_uid;
+	data->st_gid = sb.st_gid;
+	data->mtime = sb.st_mtime;
+	data->st_size = sb.st_size;
+	data->name = ft_strdup(file->d_name);
 	data->perm = get_perm(ft_itoa_base_int((int)sb.st_mode, 8), file->d_type);
 	if (file->d_type == F_DIR && ft_strcmp(ACT, file->d_name) && ft_strcmp(BEF, file->d_name))
 	{
-		open_dir(env, file->d_name);
-		// ft_printf("%s is a dir\n", file->d_name);
+		tmp = env->curr_path;
+		env->curr_path = get_path(env, file->d_name);
+		open_dir(env, env->curr_path);
 	}
-	display(env, &sb, data->perm, file->d_name);
-	env->total += sb.st_blocks;
+	// display(data);
 }
 
-void push_lst(t_env *env, struct dirent *file, t_lst *lst)
+t_lst *create_node(t_env *env, struct dirent *file)
 {
-	t_lst	*previous;
+	t_lst *node;
+
+	if (!(node = (t_lst*)malloc(sizeof(t_lst))))
+		exit (-1);
+	node->next = NULL;
+	node->prev = NULL;
+	if (!(node->data = (t_file*)malloc(sizeof(t_file))))
+		exit (-1);
+	put_data(env, file, node->data);
+	return (node);
+}
+
+void push_lst(t_env *env, struct dirent *file, t_lst **lst)
+{
 	t_lst	*tmp;
-	t_list	*elem;
 
-	previous = NULL;
-	tmp = lst;
-	while (tmp)
+	tmp = *lst;
+	if (tmp)
 	{
-		previous = tmp;
-		tmp = tmp->next;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = create_node(env, file);
 	}
-	if (!(tmp = (t_lst*)malloc(sizeof(t_lst))))
-		exit (-1);
-	tmp->next = NULL;
-	tmp->prev = previous;
-	if (!(tmp->data = (t_file*)malloc(sizeof(t_file))))
-		exit (-1);
-	put_data(env, file, tmp->data);
-}
-
-
-void open_dir(t_env *env, char *dir)
-{
-	ft_printf("1 dir = %s\n", dir);
-	t_lst *lst;
-	DIR *rep = NULL;
-	struct dirent* file = NULL;
-
-	rep = opendir(dir);
-	while ((file = readdir(rep)))
-		push_lst(env, file, lst);
-
-	if (closedir(rep) == -1)
-		exit(-1);
-	ft_printf("1\n");
-}
-
-void display_lst(t_lst *lst)
-{
-	t_lst *tmp;
-
-	tmp = lst;
-	while (tmp)
-	{
-		ft_printf("tmp->name = %s\n", tmp->data->name);
-		tmp = tmp->next;
-	}
+	else
+		*lst = create_node(env, file);
 }
 
 int count_total(t_env *env)
@@ -250,7 +267,7 @@ int count_total(t_env *env)
 	DIR *rep;
 
 	total = 0;
-	rep = opendir(env->path);
+	rep = opendir(env->curr_path);
 	while ((file = readdir(rep)))
 	{
 		// display_open(file);
@@ -262,6 +279,58 @@ int count_total(t_env *env)
 	return (total);
 }
 
+void debug_lst(t_lst *lst)
+{
+	int i;
+	t_lst *tmp;
+
+	ft_printf("lst :\n");
+	i = 0;
+	tmp = lst;
+	while (tmp)
+	{
+		ft_printf("%d: '%s'\n", i, tmp->data->name);
+		tmp = tmp->next;
+		++i;
+	}
+}
+
+void display_lst(t_lst *lst)
+{
+	t_lst *tmp;
+
+	tmp = lst;
+	while (tmp)
+	{
+		display(tmp->data);
+		tmp = tmp->next;
+	}
+}
+
+void open_dir(t_env *env, char *dir)
+{
+	t_lst *lst;
+	DIR *rep = NULL;
+	struct dirent* file = NULL;
+	char *act_path;
+
+	act_path = NULL;
+	ft_printf("%s:\n", dir);
+	count_total(env);
+	rep = opendir(dir);
+	// if (!(lst = (t_lst*)malloc(sizeof(t_lst))))
+		// exit (-1);
+	lst = NULL;
+	while ((file = readdir(rep)))
+		push_lst(env, file, &lst);
+	lst = sort_list(lst, ft_strcmp);
+	display_lst(lst);
+	// debug_lst(lst);
+	if (closedir(rep) == -1)
+		exit(-1);
+ft_printf("\n\n");
+}
+
 int main(int argc, char **argv)
 {
 	t_env env;
@@ -270,13 +339,12 @@ int main(int argc, char **argv)
 
 	init_env(&env);
 	if (argc < 2)
-		env.path = ".";
+		env.path = ft_strdup(".");
 	else
 		env.path = ft_strdup(argv[1]);
 	env.curr_path = ft_strdup(env.path);
 	parse_args(&env, argv, argc);
 	// print_env(&env);
-	count_total(&env);
 	open_dir(&env, env.path);
 	// display_lst(lst);
 	return 0;
