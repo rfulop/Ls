@@ -6,7 +6,7 @@
 /*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/13 12:30:46 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/15 15:30:02 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/15 21:02:03 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ typedef struct s_file
   gid_t      st_gid;
   time_t     mtime;
   off_t      st_size;
-  char       *file;
   char       *perm;
   char       *name;
 }              t_file;
