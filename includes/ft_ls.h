@@ -45,6 +45,7 @@
 
 #define ACT "."
 #define BEF ".."
+#define ROO "/"
 
 typedef struct s_env
 {

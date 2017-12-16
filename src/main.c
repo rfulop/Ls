@@ -45,9 +45,10 @@ char *get_perm(int oct, int type)
 	int  bit;
 	static char perm[13] = {0};
 
+
 	i = 2;
 	j = 1;
-	perm[0] = type == 4 ? 'd' : '-';
+	perm[0] = (type == F_DIR) ? 'd' : '-';
 	bit = ((oct / ft_power(10, 4)) % 10);
 	while (i >= 0)
 	{
@@ -58,6 +59,7 @@ char *get_perm(int oct, int type)
 		perm[j + 2] = bit & 1 ? 'x' : '-';
 		j += 3;
 	}
+	// ft_printf("perm = %s\n", perm);
 	return (perm);
 }
 
@@ -161,9 +163,12 @@ char *get_path(t_env *env, char* file)
 	char *path;
 	char *tmp;
 
-	tmp = env->path;
-	if (0[tmp] == '.')
+	tmp = env->curr_path;
+	// ft_printf("get path tmp = %s file = %s\n", tmp, file);
+	if (!(ft_strcmp(tmp, ACT)))
 		path = ft_strdup(file);
+	else if (!(ft_strcmp(tmp, ROO)))
+		path = ft_strjoin("/", file);
 	else
 	{
 		path = ft_strjoin(tmp, "/");
@@ -178,6 +183,7 @@ int 	do_stat(t_env *env, struct dirent *file, struct stat *sb)
 	char *path;
 
 	path = get_path(env, file->d_name);
+	// ft_printf("path = %s env->path = %s file name = %s\n", path, env->path, file->d_name);
 	statret = stat(path, sb);
 	return (statret);
 }
@@ -194,7 +200,7 @@ void put_data(t_env *env, struct dirent *file, t_file *data)
 	data->mtime = sb.st_mtime;
 	data->st_size = sb.st_size;
 	data->name = ft_strdup(file->d_name);
-	data->perm = get_perm(ft_itoa_base_int((int)sb.st_mode, 8), file->d_type);
+	data->perm = ft_strdup(get_perm(ft_itoa_base_int((int)sb.st_mode, 8), file->d_type));
 	// if (file->d_type == F_DIR && ft_strcmp(ACT, file->d_name) && ft_strcmp(BEF, file->d_name))
 	// {
 	// 	tmp = env->curr_path;
@@ -249,7 +255,7 @@ int count_total(t_env *env)
 		total += sb.st_blocks;
 	}
 	closedir(rep);
-	ft_printf("Total %d\n", total);
+	ft_printf("total %d\n", total);
 	return (total);
 }
 
@@ -265,34 +271,44 @@ void display_lst(t_env *env, t_lst *lst)
 	}
 }
 
-void check_dir(t_env *env)
+void check_dir(t_env *env, char *dir)
 {
 	DIR *rep = NULL;
 	struct dirent* file = NULL;
 	char *tmp;
 
+	// ft_printf("\nCheck dir = '%s'\n", dir);
+	if (!(rep = opendir(dir)))
+		exit (-1);
+	tmp = ft_strdup(env->curr_path);
 	while ((file = readdir(rep)))
 	{
 		if (file->d_type == F_DIR && ft_strcmp(ACT, file->d_name) && ft_strcmp(BEF, file->d_name))
 		{
-			tmp = env->curr_path;
 			env->curr_path = get_path(env, file->d_name);
 			open_dir(env, env->curr_path);
+			// ft_memdel((void*)&env->curr_path);
+			env->curr_path = ft_strdup(tmp);
 		}
 	}
+	ft_memdel((void*)&tmp);
+	// ft_printf("\nENDOF of check dir\n");
 }
 
 void open_dir(t_env *env, char *dir)
 {
+	char *tmp;
 	t_lst *lst;
 	DIR *rep = NULL;
 	struct dirent* file = NULL;
-	char *act_path;
 
-	act_path = NULL;
+	// ft_printf("Open dir = '%s'\n", dir);
 	if (env->long_form)
 	{
-		ft_printf("%s:\n", dir);
+		if (!(ft_strcmp(env->path, env->curr_path)))
+			;
+		else
+			ft_printf("\n%s:\n", dir);
 		count_total(env);
 	}
 	if (!(rep = opendir(dir)))
@@ -300,15 +316,22 @@ void open_dir(t_env *env, char *dir)
 	// if (!(lst = (t_lst*)malloc(sizeof(t_lst))))
 		// exit (-1);
 	lst = NULL;
+	// tmp = ft_strdup(env->curr_path);
 	while ((file = readdir(rep)))
-	{
 		push_lst(env, file, &lst);
-	}
 	lst = sort_list(lst, ft_strcmp);
 	display_lst(env, lst);
-	// debug_lst(lst);
 	if (closedir(rep) == -1)
 		exit(-1);
+	if (env->long_form)
+	{
+		// ft_printf("Before check dir path env = %s tmp = %s\n", env->curr_path, tmp);
+		check_dir(env, dir);
+		// ft_printf("After check dir path env = %s tmp= %s\n", env->curr_path, tmp);
+		// ft_memdel((void*)&env->curr_path);
+		// env->curr_path = ft_strdup(tmp);
+	}
+	// debug_lst(lst);
 // ft_printf("\n\n");
 }
 
