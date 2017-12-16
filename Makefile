@@ -12,7 +12,7 @@
 .PHONY: all, clean, fclean, re
 
 CC = clang
-CFLAGS = #-g -Wall -Werror -Wextra -Wunused
+CFLAGS = -g #-Wall -Werror -Wextra -Wunused
 NAME = ft_ls
 
 SRC_PATH = ./src/
@@ -22,7 +22,14 @@ INC_PATH = ./includes/
 LIB_PATH = ./libft/
 
 SRC_FILES = main.c \
-			debug.c
+			display.c \
+			free.c \
+			init.c \
+			lst.c \
+			parse.c \
+			sort.c \
+			utils.c \
+			debug.c\
 
 INC_FILES = ft_ls.h
 LIB_FILES = libft.a

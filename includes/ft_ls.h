@@ -6,7 +6,7 @@
 /*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/13 12:30:46 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/15 21:02:03 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/16 05:57:59 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ typedef struct s_env
   int       reverse_short; // Reverse the order of the sort to get reverse lexicographical order or the oldest
   int       time_short; // Sort by time modified (most recently modified first) before sorting the operands by lexicographical order.
   char      *path;
-  char      *curr_path;
 
 }           t_env;
 
@@ -74,9 +73,57 @@ typedef struct s_file
   gid_t      st_gid;
   time_t     mtime;
   off_t      st_size;
+  blkcnt_t  st_blocks;
   char       *perm;
   char       *name;
+  char       *path;
 }              t_file;
+
+
+char *get_path(char *path, char* file);
+char 	*do_stat(t_env *env, struct dirent *file, struct stat *sb, char *path);
+void count_total(t_lst *lst);
+void check_dir(t_env *env, char *dir);
+void open_dir(t_env *env, char *dir);
+
+/*
+** Init
+*/
+void 	init_env(t_env *env);
+
+/*
+** Parsing
+*/
+void	check_args_letter(t_env *env, char let);
+int parse_args(t_env *env, char **argv, int argc);
+
+/*
+** Display
+*/
+void display(t_env *env, t_file *file);
+void display_lst(t_env *env, t_lst *lst);
+
+/*
+** List tools
+*/
+void put_data(t_env *env, struct dirent *file, t_file *data, char *path);
+t_lst *create_node(t_env *env, struct dirent *file, char *path);
+void push_lst(t_env *env, struct dirent *file, t_lst **lst, char *path);
+
+/*
+** Sorting
+*/
+t_lst *sort_list(t_lst *lst, int (*cmp)(const char *, const char *));
+
+/*
+** Utils
+*/
+char *get_perm(int oct, int type);
+
+/*
+** Free
+*/
+void free_lst(t_lst *lst);
 
 /*
 ** Debug
