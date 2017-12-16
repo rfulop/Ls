@@ -6,7 +6,7 @@
 /*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/10 18:35:37 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/16 05:55:21 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/16 06:37:41 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,25 +57,22 @@ void count_total(t_lst *lst)
 	ft_printf("total %d\n", total);
 }
 
-void check_dir(t_env *env, char *dir)
+void check_dir(t_env *env, char *dir, t_lst *lst)
 {
-	DIR *rep = NULL;
-	struct dirent* file = NULL;
 	char *path;
+	t_lst *tmp;
 
-	if (!(rep = opendir(dir)))
-		exit (-1);
-	while ((file = readdir(rep)))
+	tmp = lst;
+	while (lst)
 	{
-		if (file->d_type == F_DIR && ft_strcmp(ACT, file->d_name) && ft_strcmp(BEF, file->d_name))
-		{
-			path = get_path(dir, file->d_name);
-			open_dir(env, path);
-			ft_memdel((void*)&path);
-		}
+	 if (lst->data->type == F_DIR && ft_strcmp(ACT, lst->data->name) && ft_strcmp(BEF, lst->data->name))
+	 {
+		 		path = get_path(dir, lst->data->name);
+		 		open_dir(env, path);
+		 		ft_memdel((void*)&path);
+	 }
+		lst = lst->next;
 	}
-	if (closedir(rep) == -1)
-		exit(-1);
 }
 
 void open_dir(t_env *env, char *dir)
@@ -101,7 +98,7 @@ void open_dir(t_env *env, char *dir)
 	lst = sort_list(lst, ft_strcmp);
 	display_lst(env, lst);
 	if (env->recurs)
-		check_dir(env, dir);
+		check_dir(env, dir, lst);
 	if (closedir(rep) == -1)
 		exit(-1);
 	free_lst(lst);

@@ -6,7 +6,7 @@
 /*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/13 12:30:46 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/16 05:57:59 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/16 06:35:51 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ typedef struct s_file
 char *get_path(char *path, char* file);
 char 	*do_stat(t_env *env, struct dirent *file, struct stat *sb, char *path);
 void count_total(t_lst *lst);
-void check_dir(t_env *env, char *dir);
+void check_dir(t_env *env, char *dir, t_lst *lst);
 void open_dir(t_env *env, char *dir);
 
 /*
