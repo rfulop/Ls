@@ -6,7 +6,7 @@
 /*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/13 12:30:46 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/16 06:35:51 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/16 19:10:14 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <pwd.h>
+#include <errno.h>
 //#include <uuid/uuid.h>
 #include <grp.h>
 #include "libft.h"

@@ -6,7 +6,7 @@
 /*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/10 18:35:37 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/16 06:37:41 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/16 19:31:36 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ void open_dir(t_env *env, char *dir)
 	DIR *rep = NULL;
 	struct dirent* file = NULL;
 
+	// ft_printf("opendir - Dir = %s\n", dir);
 	if (!(rep = opendir(dir)))
 		exit (-1);
 	lst = NULL;

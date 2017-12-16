@@ -6,7 +6,7 @@
 /*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/15 23:44:43 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/16 05:58:21 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/16 19:31:14 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ void push_lst(t_env *env, struct dirent *file, t_lst **lst, char *path)
 	t_lst	*tmp;
 
 	tmp = *lst;
+	if (!env->hiden_files && 0[file->d_name] == '.')
+		return ;
 	if (tmp)
 	{
 		while (tmp->next)
