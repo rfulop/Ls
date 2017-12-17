@@ -18,6 +18,10 @@ void display(t_env *env, t_file *file)
 	struct group *gr;
 	char date[13] = {0};
 
+	// char *list;
+	// ft_printf("path = %s\n", file->path);
+	// size_t test = listxattr(file->path, list, 0, 0);
+	// ft_printf("test = %d\n", test);
 	if (env->long_form)
 	{
 		pwd = getpwuid(file->st_uid);

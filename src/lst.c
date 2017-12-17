@@ -14,9 +14,12 @@
 
 void put_data(t_env *env, struct dirent *file, t_file *data, char *path)
 {
+	char c;
 	struct stat sb;
 
+	c = 0;
 	data->path = do_stat(env, file, &sb, path);
+	// debug_stat(env, file, &sb);
 	data->type = file->d_type;
 	data->st_nlink = sb.st_nlink;
 	data->st_uid = sb.st_uid;
@@ -25,7 +28,16 @@ void put_data(t_env *env, struct dirent *file, t_file *data, char *path)
 	data->st_size = sb.st_size;
 	data->st_blocks = sb.st_blocks;
 	data->name = ft_strdup(file->d_name);
-	data->perm = ft_strdup(get_perm(ft_itoa_base_int((int)sb.st_mode, 8), file->d_type));
+	size_t test = listxattr(data->path, NULL, 0, 0);
+	acl_t   acl;
+	acl = acl_get_file(data->path, ACL_TYPE_EXTENDED);
+	// ft_printf("\tlstxattr = %d acl = %d\n", test, acl);
+	if (acl)
+		c = '+';
+	if (listxattr(data->path, NULL, 0, 0) > 0)
+		c = '@';
+	acl_free((void *)acl);
+	data->perm = ft_strdup(get_perm(ft_itoa_base_int((int)sb.st_mode, 8), file->d_type, c));
 }
 
 t_lst *create_node(t_env *env, struct dirent *file, char *path)

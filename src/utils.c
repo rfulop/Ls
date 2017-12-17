@@ -12,12 +12,12 @@
 
 #include "ft_ls.h"
 
-char *get_perm(int oct, int type)
+char *get_perm(int oct, int type, char c)
 {
 	int i;
 	int j;
 	int  bit;
-	static char perm[13] = {0};
+	static char perm[11] = {0};
 
 
 	i = 2;
@@ -33,5 +33,6 @@ char *get_perm(int oct, int type)
 		perm[j + 2] = bit & 1 ? 'x' : '-';
 		j += 3;
 	}
+	perm[10] = (c ? c : 0);
 	return (perm);
 }

@@ -32,13 +32,12 @@ void debug_open(struct dirent *file)
 
 void debug_stat(t_env *env, struct dirent *file, struct stat *sb)
 {
-	ft_printf("\n");
+	ft_printf("\nFile name is %s\n", file->d_name);
 	// ft_printf("\nFile type = %d\n", file->d_type);
 	if (file->d_type == 8)
 		ft_printf("\tFile is regular\n");
 	else
 		ft_printf("\tFile is a directory\n");
-	ft_printf("\tFile name is %s\n", file->d_name);
 	ft_printf("\t-node number: %ld\n", (long)sb->st_ino);
 	ft_printf("\tMode: %lo (octal)\n", (unsigned long)sb->st_mode);
 	ft_printf("\tLink count: %ld\n", (long)sb->st_nlink);

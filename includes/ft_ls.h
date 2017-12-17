@@ -26,17 +26,18 @@
 #include <grp.h>
 #include "libft.h"
 #include "ft_printf.h"
+#include <sys/xattr.h>
+#include <sys/acl.h>
 
-
-// #define 			 S_IFMT 0170000           /* type of file */
-// #define        S_IFIFO  0010000  /* named pipe (fifo) */
-// #define        S_IFCHR  0020000  /* character special */
-// #define        S_IFDIR  0040000  /* directory */
-// #define        S_IFBLK  0060000  /* block special */
-// #define        S_IFREG  0100000  /* regular */
-// #define        S_IFLNK  0120000  /* symbolic link */
-// #define        S_IFSOCK 0140000  /* socket */
-// #define        S_IFWHT  0160000  /* whiteout */
+#define 			 S_IFMT 0170000           /* type of file */
+#define        S_IFIFO  0010000  /* named pipe (fifo) */
+#define        S_IFCHR  0020000  /* character special */
+#define        S_IFDIR  0040000  /* directory */
+#define        S_IFBLK  0060000  /* block special */
+#define        S_IFREG  0100000  /* regular */
+#define        S_IFLNK  0120000  /* symbolic link */
+#define        S_IFSOCK 0140000  /* socket */
+#define        S_IFWHT  0160000  /* whiteout */
 
 #define IS_DIR 1
 #define IS_REG 2
@@ -119,7 +120,7 @@ t_lst *sort_list(t_lst *lst, int (*cmp)(const char *, const char *));
 /*
 ** Utils
 */
-char *get_perm(int oct, int type);
+char *get_perm(int oct, int type, char c);
 
 /*
 ** Free

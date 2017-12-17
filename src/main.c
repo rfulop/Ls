@@ -54,7 +54,8 @@ void count_total(t_lst *lst)
 		total += tmp->data->st_blocks;
 		tmp = tmp->next;
 	}
-	ft_printf("total %d\n", total);
+	if (total)
+		ft_printf("total %d\n", total);
 }
 
 void check_dir(t_env *env, char *dir, t_lst *lst)
@@ -62,9 +63,11 @@ void check_dir(t_env *env, char *dir, t_lst *lst)
 	char *path;
 	t_lst *tmp;
 
+	// ft_printf("Enter check dir\n");
 	tmp = lst;
 	while (lst)
 	{
+	// ft_printf("file = %s type = %d\n", lst->data->name, lst->data->type);
 	 if (lst->data->type == F_DIR && ft_strcmp(ACT, lst->data->name) && ft_strcmp(BEF, lst->data->name))
 	 {
 		 		path = get_path(dir, lst->data->name);
@@ -82,9 +85,16 @@ void open_dir(t_env *env, char *dir)
 	DIR *rep = NULL;
 	struct dirent* file = NULL;
 
+	// ft_printf("Opendir - Dir = %s\n", dir);
 	// ft_printf("opendir - Dir = %s\n", dir);
 	if (!(rep = opendir(dir)))
-		exit (-1);
+	{
+		// ft_printf("%s ", rep);
+		perror("Error");
+		return ;
+		// ft_printf("Fail opendir\n");
+		// exit (-1);
+	}
 	lst = NULL;
 	while ((file = readdir(rep)))
 		push_lst(env, file, &lst, dir);
@@ -118,6 +128,7 @@ int main(int argc, char **argv)
 		env.path = ft_strdup(".");
 	else
 		env.path = ft_strdup(argv[i]);
+	// debug_env(&env);
 	open_dir(&env, env.path);
 	ft_memdel((void*)&env.path);
 	return 0;
