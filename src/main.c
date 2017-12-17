@@ -36,9 +36,18 @@ char 	*do_stat(t_env *env, struct dirent *file, struct stat *sb, char *dir)
 {
 	int statret;
 	char *path;
+	struct stat lsb;
+
+	char *link = ft_strnew(1000);
 
 	path = get_path(dir, file->d_name);
 	statret = stat(path, sb);
+	readlink(path, link, 1000);
+	ft_printf("readlink = %s\n", link);
+	lstat(path, &lsb);
+	ft_printf("lstat\n");
+	debug_stat(env, file, &lsb);
+	ft_printf("end\n");
 	return (path);
 }
 

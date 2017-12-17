@@ -19,7 +19,7 @@ void put_data(t_env *env, struct dirent *file, t_file *data, char *path)
 
 	c = 0;
 	data->path = do_stat(env, file, &sb, path);
-	// debug_stat(env, file, &sb);
+	debug_stat(env, file, &sb);
 	data->type = file->d_type;
 	data->st_nlink = sb.st_nlink;
 	data->st_uid = sb.st_uid;
