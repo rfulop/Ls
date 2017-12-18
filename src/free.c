@@ -21,6 +21,8 @@ void free_lst(t_lst *lst)
 	while (tmp)
 	{
 		tmp2 = tmp->next;
+		if (tmp->data->link)
+			ft_memdel((void*)&tmp->data->link);
 		ft_memdel((void*)&tmp->data->name);
 		ft_memdel((void*)&tmp->data->perm);
 		ft_memdel((void*)&tmp->data->path);

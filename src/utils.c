@@ -19,10 +19,11 @@ char *get_perm(int oct, int type, char c)
 	int  bit;
 	static char perm[11] = {0};
 
-
 	i = 2;
 	j = 1;
 	perm[0] = (type == F_DIR) ? 'd' : '-';
+	if (type == F_SYM)
+		perm[0] = 'l';
 	bit = ((oct / ft_power(10, 4)) % 10);
 	while (i >= 0)
 	{

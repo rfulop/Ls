@@ -12,32 +12,60 @@
 
 #include "ft_ls.h"
 
+// char *put_name(char *name, char *path)
+char *put_symb(char *name, char *path)
+{
+	char *ret;
+	char link[100];
+
+	ret = NULL;
+	ft_bzero(link, 100);
+	// ret = ft_strdup(name);
+	readlink(path, link, 100);
+	if (link[0])
+		ret = ft_strdup(link);
+	return (ret);
+}
+
+char get_spec_c(t_file *data)
+{
+	char c;
+	size_t xattr;
+	acl_t acl;
+
+	c = 0;
+	xattr = listxattr(data->path, NULL, 0, 0);
+	acl = acl_get_file(data->path, ACL_TYPE_EXTENDED);
+	if (acl)
+		c = '+';
+	if (xattr > 0)
+		c = '@';
+	if (data->link)
+		data->type = F_SYM;
+	acl_free((void *)acl);
+	return (c);
+}
+
 void put_data(t_env *env, struct dirent *file, t_file *data, char *path)
 {
 	char c;
 	struct stat sb;
 
-	c = 0;
 	data->path = do_stat(env, file, &sb, path);
-	debug_stat(env, file, &sb);
+	data->name = ft_strdup(file->d_name);
+	data->link = put_symb(data->name, data->path);
+	if (data->link)
+		lstat(data->path, &sb);
+	// debug_stat(env, file, &sb);
 	data->type = file->d_type;
 	data->st_nlink = sb.st_nlink;
 	data->st_uid = sb.st_uid;
 	data->st_gid = sb.st_gid;
-	data->mtime = sb.st_mtime;
+	data->mtime = sb.st_ctime;
 	data->st_size = sb.st_size;
 	data->st_blocks = sb.st_blocks;
-	data->name = ft_strdup(file->d_name);
-	size_t test = listxattr(data->path, NULL, 0, 0);
-	acl_t   acl;
-	acl = acl_get_file(data->path, ACL_TYPE_EXTENDED);
-	// ft_printf("\tlstxattr = %d acl = %d\n", test, acl);
-	if (acl)
-		c = '+';
-	if (listxattr(data->path, NULL, 0, 0) > 0)
-		c = '@';
-	acl_free((void *)acl);
-	data->perm = ft_strdup(get_perm(ft_itoa_base_int((int)sb.st_mode, 8), file->d_type, c));
+	c = get_spec_c(data);
+	data->perm = ft_strdup(get_perm(ft_itoa_base_int((int)sb.st_mode, 8), data->type, c));
 }
 
 t_lst *create_node(t_env *env, struct dirent *file, char *path)

@@ -36,18 +36,10 @@ char 	*do_stat(t_env *env, struct dirent *file, struct stat *sb, char *dir)
 {
 	int statret;
 	char *path;
-	struct stat lsb;
-
-	char *link = ft_strnew(1000);
+	char *link;
 
 	path = get_path(dir, file->d_name);
 	statret = stat(path, sb);
-	readlink(path, link, 1000);
-	ft_printf("readlink = %s\n", link);
-	lstat(path, &lsb);
-	ft_printf("lstat\n");
-	debug_stat(env, file, &lsb);
-	ft_printf("end\n");
 	return (path);
 }
 
@@ -56,6 +48,7 @@ void count_total(t_lst *lst)
 	int total;
 	t_lst *tmp;
 
+	// ft_printf("count total\n");
 	total = 0;
 	tmp = lst;
 	while (tmp)
@@ -63,7 +56,7 @@ void count_total(t_lst *lst)
 		total += tmp->data->st_blocks;
 		tmp = tmp->next;
 	}
-	if (total)
+	// if (total)
 		ft_printf("total %d\n", total);
 }
 
@@ -76,7 +69,6 @@ void check_dir(t_env *env, char *dir, t_lst *lst)
 	tmp = lst;
 	while (lst)
 	{
-	// ft_printf("file = %s type = %d\n", lst->data->name, lst->data->type);
 	 if (lst->data->type == F_DIR && ft_strcmp(ACT, lst->data->name) && ft_strcmp(BEF, lst->data->name))
 	 {
 		 		path = get_path(dir, lst->data->name);

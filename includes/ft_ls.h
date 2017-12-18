@@ -44,6 +44,7 @@
 
 #define F_DIR 4
 #define F_REG 8
+#define F_SYM 1
 
 #define ACT "."
 #define BEF ".."
@@ -79,6 +80,7 @@ typedef struct s_file
   char       *perm;
   char       *name;
   char       *path;
+  char      *link;
 }              t_file;
 
 

@@ -17,6 +17,7 @@ void display(t_env *env, t_file *file)
 	struct passwd *pwd;
 	struct group *gr;
 	char date[13] = {0};
+	char *test;
 
 	// char *list;
 	// ft_printf("path = %s\n", file->path);
@@ -28,6 +29,8 @@ void display(t_env *env, t_file *file)
 		gr = getgrgid(file->st_gid);
 		if (!pwd || !gr)
 		perror("Error :");
+		test = ctime(&file->mtime);
+		ft_printf("%s -> %s\n", file->name, test);
 		ft_strncpy(date, ctime(&file->mtime) + 4, 12);
 		if (!env->hiden_files && file->name[0] == '.')
 			;
@@ -51,8 +54,14 @@ void display(t_env *env, t_file *file)
 				ft_printf("pass\n");
 			else
 			{
-				ft_printf("%s%5d %-8.8s%-12.16s%5d %s %s\n",
-				file->perm, file->st_nlink, pwd->pw_name, gr->gr_name, file->st_size, date, file->name);
+				// ft_printf("%s%5d %-8.8s%-12.16s%5d %s %s",
+				ft_printf("%-12.12s%2d %-8.8s%-9.9s%7d %-12.12s %s",
+				file->perm, file->st_nlink, pwd->pw_name, gr->gr_name,
+				file->st_size, date, file->name);
+				if (file->link)
+					ft_printf(" -> %s\n", file->link);
+				else
+					ft_printf("\n");
 			}
 		}
 	}
