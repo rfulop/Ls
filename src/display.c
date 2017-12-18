@@ -30,7 +30,7 @@ void display(t_env *env, t_file *file)
 		if (!pwd || !gr)
 		perror("Error :");
 		test = ctime(&file->mtime);
-		ft_printf("%s -> %s\n", file->name, test);
+		// ft_printf("%s -> %s\n", file->name, test);
 		ft_strncpy(date, ctime(&file->mtime) + 4, 12);
 		if (!env->hiden_files && file->name[0] == '.')
 			;

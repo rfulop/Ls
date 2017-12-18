@@ -61,7 +61,7 @@ void put_data(t_env *env, struct dirent *file, t_file *data, char *path)
 	data->st_nlink = sb.st_nlink;
 	data->st_uid = sb.st_uid;
 	data->st_gid = sb.st_gid;
-	data->mtime = sb.st_ctime;
+	data->mtime = sb.st_mtime;
 	data->st_size = sb.st_size;
 	data->st_blocks = sb.st_blocks;
 	c = get_spec_c(data);

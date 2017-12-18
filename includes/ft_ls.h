@@ -118,6 +118,8 @@ void push_lst(t_env *env, struct dirent *file, t_lst **lst, char *path);
 ** Sorting
 */
 t_lst *sort_list(t_lst *lst, int (*cmp)(const char *, const char *));
+int ft_strcmp_rev(const char *s1, const char *s2);
+t_lst *sort_time(t_lst *lst);
 
 /*
 ** Utils

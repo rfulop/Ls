@@ -107,7 +107,12 @@ void open_dir(t_env *env, char *dir)
 			ft_printf("\n%s:\n", dir);
 		count_total(lst);
 	}
-	lst = sort_list(lst, ft_strcmp);
+	if (env->reverse_short)
+		lst = sort_list(lst, ft_strcmp_rev);
+	else if (env->time_short)
+		lst = sort_time(lst);
+	else
+		lst = sort_list(lst, ft_strcmp);
 	display_lst(env, lst);
 	if (env->recurs)
 		check_dir(env, dir, lst);
