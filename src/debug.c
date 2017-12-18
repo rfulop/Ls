@@ -30,7 +30,7 @@ void debug_open(struct dirent *file)
 	ft_printf("Type of file = %d\n", file->d_type);
 }
 
-void debug_stat(t_env *env, struct dirent *file, struct stat *sb)
+void debug_stat(struct dirent *file, struct stat *sb)
 {
 	ft_printf("\nFile name is %s\n", file->d_name);
 	// ft_printf("\nFile type = %d\n", file->d_type);

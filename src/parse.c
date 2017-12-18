@@ -34,7 +34,7 @@ void	check_args_letter(t_env *env, char let)
 	}
 }
 
-int parse_args(t_env *env, char **argv, int argc)
+int parse_args(t_env *env, char **argv)
 {
 	int a;
 	int b;

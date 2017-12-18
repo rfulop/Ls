@@ -13,7 +13,7 @@
 #include "ft_ls.h"
 
 // char *put_name(char *name, char *path)
-char *put_symb(char *name, char *path)
+char *put_symb(char *path)
 {
 	char *ret;
 	char link[100];
@@ -46,14 +46,14 @@ char get_spec_c(t_file *data)
 	return (c);
 }
 
-void put_data(t_env *env, struct dirent *file, t_file *data, char *path)
+void put_data(struct dirent *file, t_file *data, char *path)
 {
 	char c;
 	struct stat sb;
 
-	data->path = do_stat(env, file, &sb, path);
+	data->path = do_stat(file, &sb, path);
 	data->name = ft_strdup(file->d_name);
-	data->link = put_symb(data->name, data->path);
+	data->link = put_symb(data->path);
 	if (data->link)
 		lstat(data->path, &sb);
 	// debug_stat(env, file, &sb);
@@ -68,7 +68,7 @@ void put_data(t_env *env, struct dirent *file, t_file *data, char *path)
 	data->perm = ft_strdup(get_perm(ft_itoa_base_int((int)sb.st_mode, 8), data->type, c));
 }
 
-t_lst *create_node(t_env *env, struct dirent *file, char *path)
+t_lst *create_node(struct dirent *file, char *path)
 {
 	t_lst *node;
 
@@ -78,7 +78,7 @@ t_lst *create_node(t_env *env, struct dirent *file, char *path)
 	node->prev = NULL;
 	if (!(node->data = (t_file*)malloc(sizeof(t_file))))
 		exit (-1);
-	put_data(env, file, node->data, path);
+	put_data(file, node->data, path);
 	return (node);
 }
 
@@ -93,8 +93,8 @@ void push_lst(t_env *env, struct dirent *file, t_lst **lst, char *path)
 	{
 		while (tmp->next)
 			tmp = tmp->next;
-		tmp->next = create_node(env, file, path);
+		tmp->next = create_node(file, path);
 	}
 	else
-		*lst = create_node(env, file, path);
+		*lst = create_node(file, path);
 }

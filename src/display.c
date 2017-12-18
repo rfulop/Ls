@@ -36,26 +36,12 @@ void display(t_env *env, t_file *file)
 			;
 		else
 		{
-		// ft_printf("\nDisplay File name = %s\n", file->name);
-		// 	ft_printf("perm = %s\n", file->perm);
-		// 	ft_printf("st nlink = %d\n", file->st_nlink);
-		// 	if (!pwd || !pwd->pw_name)
-		// 		ft_printf("pw_name = 1000\n");
-		// 	else
-		// 		ft_printf("pw_name = %s\n", pwd->pw_name);
-		// 	if (!gr || !gr->gr_name)
-		// 		ft_printf("gr_name = 1000\n");
-		// 	else
-		// 		ft_printf("gr_name = %s\n", gr->gr_name);
-		// 	ft_printf("st_size = %d\n", file->st_size);
-		// 	ft_printf("date = %s\n", date);
-		// 	ft_printf("file name = %s\n", file->name);
 			if (!pwd || !gr || !pwd->pw_name || !gr->gr_name)
 				ft_printf("pass\n");
 			else
 			{
 				// ft_printf("%s%5d %-8.8s%-12.16s%5d %s %s",
-				ft_printf("%-12.12s%2d %-8.8s%-9.9s%7d %-12.12s %s",
+				ft_printf("%-12.12s%2d %-8.8s%-11.11s%7d %-12.12s %s",
 				file->perm, file->st_nlink, pwd->pw_name, gr->gr_name,
 				file->st_size, date, file->name);
 				if (file->link)
