@@ -29,6 +29,12 @@
 #include <sys/xattr.h>
 #include <sys/acl.h>
 
+/*
+** Errno error
+*/
+#define PERM_ERR 13
+
+
 #define 			 S_IFMT 0170000           /* type of file */
 #define        S_IFIFO  0010000  /* named pipe (fifo) */
 #define        S_IFCHR  0020000  /* character special */
@@ -85,7 +91,7 @@ typedef struct s_file
 
 
 char *get_path(char *path, char* file);
-char 	*do_stat(t_env *env, struct dirent *file, struct stat *sb, char *path);
+char 	*do_stat(struct dirent *file, struct stat *sb, char *path);
 void count_total(t_lst *lst);
 void check_dir(t_env *env, char *dir, t_lst *lst);
 void open_dir(t_env *env, char *dir);
@@ -99,7 +105,7 @@ void 	init_env(t_env *env);
 ** Parsing
 */
 void	check_args_letter(t_env *env, char let);
-int parse_args(t_env *env, char **argv, int argc);
+int parse_args(t_env *env, char **argv);
 
 /*
 ** Display
@@ -110,8 +116,8 @@ void display_lst(t_env *env, t_lst *lst);
 /*
 ** List tools
 */
-void put_data(t_env *env, struct dirent *file, t_file *data, char *path);
-t_lst *create_node(t_env *env, struct dirent *file, char *path);
+void put_data(struct dirent *file, t_file *data, char *path);
+t_lst *create_node(struct dirent *file, char *path);
 void push_lst(t_env *env, struct dirent *file, t_lst **lst, char *path);
 
 /*
@@ -135,7 +141,7 @@ void free_lst(t_lst *lst);
 ** Debug
 */
 void debug_lst(t_lst *lst);
-void debug_stat(t_env *env, struct dirent *file, struct stat *sb);
+void debug_stat(struct dirent *file, struct stat *sb);
 void debug_open(struct dirent *file);
 void 	debug_env(t_env *env);
 

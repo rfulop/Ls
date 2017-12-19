@@ -47,7 +47,6 @@ void count_total(t_lst *lst)
 	int total;
 	t_lst *tmp;
 
-	// ft_printf("count total\n");
 	total = 0;
 	tmp = lst;
 	while (tmp)
@@ -78,19 +77,23 @@ void check_dir(t_env *env, char *dir, t_lst *lst)
 	}
 }
 
-void check_is_dir(t_env *env, DIR *rep, char *dir)
+void check_is_dir(t_env *env, char *dir)
 {
 	DIR *new_rep;
 	struct dirent *file;
-	struct stat sb;
+	// struct stat sb;
 	t_lst *lst;
 
 	file = NULL;
 	lst = NULL;
-	if (!(rep = opendir(dir)))
-	{
-		if (!(stat(dir, &sb)))
-		{
+	// ft_printf("Check is dir with dir = %s\n", dir);
+	// if (!(rep = opendir(dir)))
+	// {
+	// 	perror(dir);
+	// 	if (errno == PERM_ERR)
+	// 		return ;
+	// 	if (!(stat(dir, &sb)))
+	// 	{
 			if ((new_rep = opendir(".")))
 			{
 				while ((file = readdir(new_rep)))
@@ -101,12 +104,14 @@ void check_is_dir(t_env *env, DIR *rep, char *dir)
 				push_lst(env, file, &lst, ".");
 				display_lst(env, lst);
 			}
-		}
-		else
-		{
-			exit(-1) ;
-		}
-	}
+			closedir(new_rep);
+	// 	}
+	// 	else
+	// 	{
+	// 		exit(-1) ;
+	// 	}
+	// }
+	// closedir(rep);
 }
 
 void open_dir(t_env *env, char *dir)
@@ -117,11 +122,17 @@ void open_dir(t_env *env, char *dir)
 	// struct stat sb;
 	// ft_printf("Opendir - Dir = %s\n", dir);
 	// ft_printf("opendir - Dir = %s\n", dir);
-	check_is_dir(env, rep, dir);
+	// check_is_dir(env, rep, dir);
 	if (!(rep = opendir(dir)))
 	{
 		// ft_printf("%s ", rep);
-		// perror("Error");
+		if (errno == ENOTDIR)
+		{
+			check_is_dir(env, dir);
+			return ;
+		}
+		// ft_printf("error %d\n", errno);
+		perror(dir);
 		// if (!(rep = opendir(".")))
 			// ft_printf("Does not exist\n");
 		return ;
@@ -162,17 +173,18 @@ int main(int argc, char **argv)
 	init_env(&env);
 	i = parse_args(&env, argv);
 	if (i == argc)
-		env.path = ft_strdup(".");
-	else
 	{
-		while (i < argc)
-		{
-			env.path = ft_strdup(argv[i]);
-			// debug_env(&env);
-			open_dir(&env, env.path);
-			ft_memdel((void*)&env.path);
-			++i;
-		}
+		env.path = ft_strdup(".");
+		open_dir(&env, env.path);
+		ft_memdel((void*)&env.path);
+	}
+	while (i < argc)
+	{
+		env.path = ft_strdup(argv[i]);
+		// debug_env(&env);
+		open_dir(&env, env.path);
+		ft_memdel((void*)&env.path);
+		++i;
 	}
 	return 0;
 }

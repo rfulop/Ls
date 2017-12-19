@@ -37,6 +37,6 @@ char *get_perm(int oct, int type, char c)
 	bit = ((oct / ft_power(10, 3)) % 10);
 	if (bit & 1)
 		perm[9] = 't';
-	perm[10] = (c ? c : 0);
+	perm[10] = (c ? c : ' ');
 	return (perm);
 }

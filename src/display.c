@@ -40,10 +40,14 @@ void display(t_env *env, t_file *file)
 				ft_printf("pass\n");
 			else
 			{
+				ft_printf("%s", file->perm);
+				ft_printf("%4d", file->st_nlink);
+				// ft_printf("%-14s%.-3d %.8s", file->perm, file->st_nlink, pwd->pw_name);
 				// ft_printf("%s%5d %-8.8s%-12.16s%5d %s %s",
-				ft_printf("%-12.12s%2d %-8.8s%-11.11s%7d %-12.12s %s",
-				file->perm, file->st_nlink, pwd->pw_name, gr->gr_name,
-				file->st_size, date, file->name);
+				// ft_printf("%-12s%2d %-8.8s%-11.11s%7d %-12.12s %s",
+				// ft_printf("%-12.12s%2d %-8.8s%-11.11s%7d %-12.12s %s",
+				// file->perm, file->st_nlink, pwd->pw_name, gr->gr_name,
+				// file->st_size, date, file->name);
 				if (file->link)
 					ft_printf(" -> %s\n", file->link);
 				else
