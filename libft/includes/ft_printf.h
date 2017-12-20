@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rfulop <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/30 23:18:18 by rfulop            #+#    #+#             */
-/*   Updated: 2017/12/07 16:02:50 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/20 18:42:54 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void				ft_init_ret(t_opt *opt);
 /*
 ** Check flag functions
 */
-int					ft_flag(t_opt *opt, char *fmt);
+int					ft_flag(va_list ap, t_opt *opt, char *fmt);
 void				ft_f_option(t_opt *opt, char c);
 int					ft_f_length(t_opt *opt, char *str);
 int					ft_f_width(t_opt *opt, char *str);
@@ -129,5 +129,6 @@ void				ft_c_null(t_opt *opt, unsigned char a);
 ** Debug functions
 */
 void				ft_print_map(t_opt *map);
+int					ft_wildcard(va_list, t_opt *opt);
 
 #endif

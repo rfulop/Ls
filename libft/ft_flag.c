@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_opt.c                                           :+:      :+:    :+:   */
+/*   ft_flag.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rfulop <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: rfulop <rfulop@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/02 19:28:25 by rfulop            #+#    #+#             */
-/*   Updated: 2017/04/29 03:22:19 by rfulop           ###   ########.fr       */
+/*   Updated: 2017/12/20 18:57:03 by rfulop           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int		ft_f_precision(t_opt *opt, char *str)
 	return (--a);
 }
 
-int		ft_flag(t_opt *opt, char *fmt)
+int		ft_flag(va_list ap, t_opt *opt, char *fmt)
 {
 	int a;
 
@@ -98,6 +98,8 @@ int		ft_flag(t_opt *opt, char *fmt)
 			ft_f_option(opt, fmt[a]);
 		else if (ft_isdigit(fmt[a]))
 			a += ft_f_width(opt, &fmt[a]);
+		else if (fmt[a] == '*')
+			a += ft_wildcard(ap, opt);
 		else if (fmt[a] == '.')
 			a += ft_f_precision(opt, &fmt[a]);
 		else if (fmt[a] == 'l' || fmt[a] == 'h' || fmt[a] == 'z' ||

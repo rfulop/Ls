@@ -104,6 +104,7 @@ SRC_NAME = ft_memset.c \
 		   ft_u.c \
 		   ft_x.c \
 		   ft_flag.c \
+		   ft_wildcard.c \
 		   ft_init_opt.c \
 		   ft_print_xou.c \
 		   ft_conv_type.c \
@@ -118,7 +119,7 @@ SRC_NAME = ft_memset.c \
 			ft_strnewchr.c \
 			ft_str_isdigit.c \
             ft_strrev.c \
-			ft_itoa_base_int.c
+			ft_itoa_base_int.c \
 
 SRC = $(addprefix $(SRC_PATH), $(SRC_NAME))
 
