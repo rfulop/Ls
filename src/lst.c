@@ -36,12 +36,26 @@ char get_spec_c(t_file *data)
 	c = 0;
 	xattr = listxattr(data->path, NULL, 0, 0);
 	acl = acl_get_file(data->path, ACL_TYPE_EXTENDED);
-	if (acl)
-		c = '+';
-	if (xattr > 0)
-		c = '@';
 	if (data->link)
+	{
+		ft_printf("HAS LINK %s\n", data->link);
+		xattr = listxattr(data->link, NULL, 0, 0);
+	}
+	if (acl)
+	{
+		// ft_printf("data->path = %s has acl = %d\n", data->path, (int)acl);
+		c = '+';
+	}
+	if (xattr && (int)xattr != -1)
+	{
+		ft_printf("File %s has %d xattr\n", data->name, xattr);
+		c = '@';
+	}
+	if (data->link)
+	{
+		// c = '@';
 		data->type = F_SYM;
+	}
 	acl_free((void *)acl);
 	return (c);
 }
@@ -50,17 +64,22 @@ void put_data(struct dirent *file, t_file *data, char *path)
 {
 	char c;
 	struct stat sb;
+	struct passwd *pwd;
+	struct group *gr;
 
 	data->path = do_stat(file, &sb, path);
 	data->name = ft_strdup(file->d_name);
 	data->link = put_symb(data->path);
 	if (data->link)
 		lstat(data->path, &sb);
-	// debug_stat(env, file, &sb);
 	data->type = file->d_type;
 	data->st_nlink = sb.st_nlink;
-	data->st_uid = sb.st_uid;
-	data->st_gid = sb.st_gid;
+	gr = getgrgid(sb.st_gid);
+	pwd = getpwuid(sb.st_uid);
+	data->uid = pwd->pw_name;
+	data->gid = gr->gr_name;
+	// data->st_uid = sb.st_uid;
+	// data->st_gid = sb.st_gid;
 	data->mtime = sb.st_mtime;
 	data->st_size = sb.st_size;
 	data->st_blocks = sb.st_blocks;

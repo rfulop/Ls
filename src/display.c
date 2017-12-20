@@ -14,8 +14,8 @@
 
 void display(t_env *env, t_file *file)
 {
-	struct passwd *pwd;
-	struct group *gr;
+	// struct passwd *pwd;
+	// struct group *gr;
 	char date[13] = {0};
 	char *test;
 
@@ -25,10 +25,10 @@ void display(t_env *env, t_file *file)
 	// ft_printf("test = %d\n", test);
 	if (env->long_form)
 	{
-		pwd = getpwuid(file->st_uid);
-		gr = getgrgid(file->st_gid);
-		if (!pwd || !gr)
-		perror("Error :");
+		// pwd = getpwuid(file->st_uid);
+		// gr = getgrgid(file->st_gid);
+		// if (!pwd || !gr)
+		// perror("Error :");
 		test = ctime(&file->mtime);
 		// ft_printf("%s -> %s\n", file->name, test);
 		ft_strncpy(date, ctime(&file->mtime) + 4, 12);
@@ -36,12 +36,19 @@ void display(t_env *env, t_file *file)
 			;
 		else
 		{
-			if (!pwd || !gr || !pwd->pw_name || !gr->gr_name)
+			if (!file->uid || !file->gid)
 				ft_printf("pass\n");
+			// if (!pwd || !gr || !pwd->pw_name || !gr->gr_name)
+				// ft_printf("pass\n");
 			else
 			{
-				ft_printf("%s", file->perm);
-				ft_printf("%4d", file->st_nlink);
+
+				ft_printf("%s ", file->perm);
+				ft_printf("%*d ", env->max_links, file->st_nlink);
+				ft_printf("%-*s  ", env->max_user, file->uid);
+				ft_printf("%-*s  ", env->max_gr, file->gid);
+				ft_printf("%*d ", env->max_size, file->st_size);
+				ft_printf("%s %s", date, file->name);
 				// ft_printf("%-14s%.-3d %.8s", file->perm, file->st_nlink, pwd->pw_name);
 				// ft_printf("%s%5d %-8.8s%-12.16s%5d %s %s",
 				// ft_printf("%-12s%2d %-8.8s%-11.11s%7d %-12.12s %s",
@@ -69,6 +76,7 @@ void display_lst(t_env *env, t_lst *lst)
 	t_lst *tmp;
 
 	tmp = lst;
+	get_maxs(env, tmp);
 	while (tmp)
 	{
 		display(env, tmp->data);

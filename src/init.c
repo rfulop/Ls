@@ -20,4 +20,8 @@ void 	init_env(t_env *env)
 	env->reverse_short = 0;
 	env->time_short = 0;
 	env->path = NULL;
+	env->max_links = 0;
+	env->max_user = 0;
+	env->max_gr = 0;
+	env->max_size = 0;
 }

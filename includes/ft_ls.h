@@ -64,6 +64,10 @@ typedef struct s_env
   int       reverse_short; // Reverse the order of the sort to get reverse lexicographical order or the oldest
   int       time_short; // Sort by time modified (most recently modified first) before sorting the operands by lexicographical order.
   char      *path;
+  int       max_links;
+  int       max_user;
+  int       max_gr;
+  int       max_size;
 
 }           t_env;
 
@@ -78,8 +82,8 @@ typedef struct s_file
 {
   int        type;
   nlink_t    st_nlink;
-  uid_t      st_uid;
-  gid_t      st_gid;
+  // uid_t      st_uid;
+  // gid_t      st_gid;
   time_t     mtime;
   off_t      st_size;
   blkcnt_t  st_blocks;
@@ -87,6 +91,8 @@ typedef struct s_file
   char       *name;
   char       *path;
   char      *link;
+  char      *uid;
+  char      *gid;
 }              t_file;
 
 
@@ -95,6 +101,7 @@ char 	*do_stat(struct dirent *file, struct stat *sb, char *path);
 void count_total(t_lst *lst);
 void check_dir(t_env *env, char *dir, t_lst *lst);
 void open_dir(t_env *env, char *dir);
+void get_maxs(t_env *env, t_lst *lst);
 
 /*
 ** Init
