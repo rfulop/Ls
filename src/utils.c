@@ -103,10 +103,6 @@ void get_maxs(t_env *env, t_lst *lst)
 	env->max_user = get_max_user(lst);
 	env->max_gr = get_max_gr(lst);
 	env->max_size = get_max_size(lst);
-	// ft_printf("Max links = %d\n", env->max_links);
-	// ft_printf("Max len user = %d\n", env->max_user);
-	// ft_printf("Max len gr = %d\n", env->max_gr);
-	// ft_printf("Max size = %d\n", env->max_size);
 }
 
 char *get_perm(int oct, int type, char c)

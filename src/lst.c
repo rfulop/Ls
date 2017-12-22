@@ -26,21 +26,31 @@ char *put_symb(char *path)
 		ret = ft_strdup(link);
 	return (ret);
 }
-
+// if acl -> t
+// if permissions fields -> @
 char get_spec_c(t_file *data)
 {
 	char c;
 	size_t xattr;
 	acl_t acl;
+	// char *tmp_path;
 
 	c = 0;
-	xattr = listxattr(data->path, NULL, 0, 0);
+	// tmp_path = NULL;
+	// ft_printf("\nreal path = %s\n", data->path);
+	// xattr = listxattr(data->path, NULL, 0, 0);
 	acl = acl_get_file(data->path, ACL_TYPE_EXTENDED);
-	if (data->link)
-	{
-		ft_printf("HAS LINK %s\n", data->link);
-		xattr = listxattr(data->link, NULL, 0, 0);
-	}
+	// if (data->link)
+	// {
+		// tmp_path = get_path("", data->link);
+		// ft_printf("HAS LINK %s, tmp path = %s\n", data->link, tmp_path);
+		// xattr = listxattr(tmp_path, NULL, 0, XATTR_NOFOLLOW);
+
+		// perror(tmp_path);
+	// }
+	// els
+		xattr = listxattr(data->path, NULL, 0, XATTR_NOFOLLOW);
+	// ft_printf("xattr = %d\n", xattr);
 	if (acl)
 	{
 		// ft_printf("data->path = %s has acl = %d\n", data->path, (int)acl);
@@ -48,7 +58,7 @@ char get_spec_c(t_file *data)
 	}
 	if (xattr && (int)xattr != -1)
 	{
-		ft_printf("File %s has %d xattr\n", data->name, xattr);
+		// ft_printf("File %s has %d xattrn", data->name, xattr);
 		c = '@';
 	}
 	if (data->link)

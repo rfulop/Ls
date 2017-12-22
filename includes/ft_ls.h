@@ -29,11 +29,14 @@
 #include <sys/xattr.h>
 #include <sys/acl.h>
 
+
+#
+
 /*
 ** Errno error
 */
 #define PERM_ERR 13
-
+#define SIX_MON 15778800
 
 #define 			 S_IFMT 0170000           /* type of file */
 #define        S_IFIFO  0010000  /* named pipe (fifo) */

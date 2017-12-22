@@ -105,6 +105,7 @@ void check_is_dir(t_env *env, char *dir)
 				display_lst(env, lst);
 			}
 			closedir(new_rep);
+	// free_lst(lst);
 	// 	}
 	// 	else
 	// 	{
@@ -162,7 +163,7 @@ void open_dir(t_env *env, char *dir)
 		check_dir(env, dir, lst);
 	if (closedir(rep) == -1)
 		exit(-1);
-	free_lst(lst);
+	// free_lst(lst);
 }
 
 int main(int argc, char **argv)
